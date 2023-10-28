@@ -1,1 +1,1 @@
-# Graph-Transformer-Bioactivity-Predictor
+# Equivariant Graph Transformer
