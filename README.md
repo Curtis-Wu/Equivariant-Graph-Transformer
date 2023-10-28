@@ -1,1 +1,1 @@
-# Equivariant Graph Transformer
+# End-to-end Molecular Potential Prediction using Pre-trained Equivariant Graph-Transformer
