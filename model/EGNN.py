@@ -191,7 +191,7 @@ class EGNN(nn.Module):
         self.type_embedding = nn.Embedding(max_atom_type, hidden_channels)
 
         for i in range(0, n_layers):
-            self.add_module(f"GCL_Layer {i}", E_GCL(
+            self.add_module("gcl_%d" % i, E_GCL(
                 input_nf = self.hidden_channels, 
                 output_nf = self.hidden_channels, 
                 hidden_nf = self.hidden_channels, 
