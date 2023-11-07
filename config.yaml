@@ -10,43 +10,9 @@ warmup_epochs: 0.3
 patience_epochs: 0.7
 
 load_model: None
-# Load the pretrained GNN model
-# load_model: ckpt/schnet         # pre-trained SchNet
-# load_model: ckpt/se3transformer # pre-trained SE(3)-Transformer
-# load_model: ckpt/egnn           # pre-trained EGNN
-# load_model: ckpt/torchmdnet     # pre-trained TorchMD-Net
-
-# Select the GNN model. Supported models:
-# - SchNet: K. T. Schütt et al., https://aip.scitation.org/doi/10.1063/1.5019779 
-# - SE(3)-Transformer: F. B. Fuchs et al., https://arxiv.org/abs/2006.10503
-# - EGNN: V. G. Satorras et al., https://arxiv.org/abs/2102.09844 
-# - TorchMD-Net: P. Thölke et al., https://arxiv.org/abs/2202.02541
-# The defualt settings are listed below.
+load_model: ckpt/egnn           # pre-trained EGNN
 
 model: 
-  # name: "SchNet"
-  # num_atoms: 28
-  # bond_feat_dim: 1
-  # num_targets: 1
-  # hidden_channels: 256
-  # num_filters: 256
-  # num_interactions: 5
-  # num_gaussians: 32
-  # cutoff: 5.0
-  # max_num_neighbors: 32
-  # readout: 'add'
-
-  # name: 'SE3Transformer'
-  # num_layers: 3
-  # atom_feature_size: 28
-  # num_channels: 8
-  # num_degrees: 4
-  # edge_dim: 4
-  # div: 4
-  # pooling: 'avg'
-  # n_heads: 2
-  # cutoff: 5.0
-  # max_num_neighbors: 32
 
   name: "EGNN"
   hidden_channels: 256
@@ -61,43 +27,11 @@ model:
   max_chirality_type: 5
   max_num_neighbors: 32
 
-  # name: "TorchMD-Net"
-  # hidden_channels: 256
-  # num_layers: 6
-  # num_rbf: 32
-  # rbf_type: "expnorm"
-  # trainable_rbf: True
-  # activation: "silu"
-  # attn_activation: "silu"
-  # neighbor_embedding: True
-  # num_heads: 8
-  # distance_influence: "both"
-  # cutoff_lower: 0.0
-  # cutoff_upper: 5.0
-  # max_atom_type: 28
-  # max_chirality_type: 5
-  # max_num_neighbors: 32
-
-# Select the dataset. Supported datasets:
-# - ANI-1: J. S. Smith et al., https://www.nature.com/articles/sdata2017193
-# - ANI-1x: J. S. Smith et al., https://www.nature.com/articles/s41597-020-0473-z
-# - ISO17: K. T. Schütt et al., https://arxiv.org/abs/1706.08566
-# - MD22: S. Chmiela et al., https://www.science.org/doi/10.1126/sciadv.adf0873
-# - SPICE: P. Eastman et al., https://www.nature.com/articles/s41597-022-01882-6
 dataset:
+
   batch_size: 256
   num_workers: 8
   valid_size: 0.1
   test_size: 0.1
   data_dir: './ANI-1'
-  # data_dir: './ANI-1x'
-  # data_dir: './iso17'
-  # data_dir: './MD22/md22_Ac-Ala3-NHMe.xyz'
-  # data_dir: './MD22/md22_DHA.xyz'
-  # data_dir: './MD22/md22_stachyose.xyz'
-  # data_dir: './MD22/md22_AT-AT.xyz'
-  # data_dir: './MD22/md22_AT-AT-CG-CG.xyz'
-  # data_dir: './MD22/md22_buckyball-catcher.xyz'
-  # data_dir: './MD22/md22_double-walled_nanotube.xyz'
-  # data_dir: './SPICE'
   seed: 666
