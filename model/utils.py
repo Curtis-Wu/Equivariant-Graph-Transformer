@@ -1,3 +1,4 @@
+# Written by Roman Zubatyuk and Justin S. Smith
 import h5py
 import numpy as np
 import os

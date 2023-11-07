@@ -43,13 +43,13 @@ class Normalizer(object):
 
 class Trainer(object):
     def __init__(self, config):
+        # Get config and device
         self.config = config
         self.device = self._get_device()
 
         from dataset_ani1 import ANI1Wrapper
         self.dataset = ANI1Wrapper(**self.config['dataset'])
         self.prefix = 'ani1'
-
         self.model_prefix = 'egnn'
         
         dir_name = '_'.join([datetime.now().strftime('%b%d_%H-%M-%S'), self.prefix, self.model_prefix])
@@ -72,18 +72,11 @@ class Trainer(object):
             shutil.copy('./config.yaml', os.path.join(ckpt_dir, 'config.yaml'))
 
     def loss_fn(self, model, data):
-        if self.config['model']['name'] == 'SE3Transformer':
-            pred_e, __ = model(data, self.device)
-            y = data.y.to(self.device)
-            loss = F.mse_loss(
-                pred_e, self.normalizer.norm(y), reduction='mean'
-            )
-        else:
-            data = data.to(self.device)
-            pred_e, __ = model(data.x, data.pos, data.batch)
-            loss = F.mse_loss(
-                pred_e, self.normalizer.norm(data.y), reduction='mean'
-            )
+        data = data.to(self.device)
+        pred_e, __ = model(data.x, data.pos, data.batch)
+        loss = F.mse_loss(
+            pred_e, self.normalizer.norm(data.y), reduction='mean'
+        )
         return pred_e, loss
 
     def train(self):
@@ -95,6 +88,8 @@ class Trainer(object):
             if i % 5000 == 0:
                 print('normalizing', i)
         labels = torch.cat(labels)
+
+        # normalize energy values
         self.normalizer = Normalizer(labels)
         print(self.normalizer.mean, self.normalizer.std, labels.shape)
         del labels
@@ -103,12 +98,14 @@ class Trainer(object):
         from EGNN import EGNN
         model = EGNN(**self.config["model"])
 
+        # move model to the desginated device (CPU or GPU)
         self._load_weights(model)
         model = model.to(self.device)
         
         if type(self.config['lr']) == str: self.config['lr'] = eval(self.config['lr']) 
         if type(self.config['min_lr']) == str: self.config['min_lr'] = eval(self.config['min_lr'])
         if type(self.config['weight_decay']) == str: self.config['weight_decay'] = eval(self.config['weight_decay']) 
+
         optimizer = AdamW(
             model.parameters(), self.config['lr'],
             weight_decay=self.config['weight_decay'],

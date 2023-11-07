@@ -7,10 +7,14 @@ from torch_geometric.loader import DataLoader as PyGDataLoader
 
 from utils import anidataloader
 
-ATOM_DICT = {('Br', -1): 0, ('Br', 0): 1, ('C', -1): 2, ('C', 0): 3, ('C', 1): 4, ('Ca', 2): 5, ('Cl', -1): 6,
-            ('Cl', 0): 7, ('F', -1): 8, ('F', 0): 9, ('H', 0): 10, ('I', -1): 11, ('I', 0): 12, ('K', 1): 13,
-            ('Li', 1): 14, ('Mg', 2): 15, ('N', -1): 16, ('N', 0): 17, ('N', 1): 18, ('Na', 1): 19, ('O', -1): 20,
-            ('O', 0): 21, ('O', 1): 22, ('P', 0): 23, ('P', 1): 24, ('S', -1): 25, ('S', 0): 26, ('S', 1): 27}
+# ATOM_DICT = {('Br', -1): 0, ('Br', 0): 1, ('C', -1): 2, ('C', 0): 3, ('C', 1): 4, ('Ca', 2): 5, ('Cl', -1): 6,
+#             ('Cl', 0): 7, ('F', -1): 8, ('F', 0): 9, ('H', 0): 10, ('I', -1): 11, ('I', 0): 12, ('K', 1): 13,
+#             ('Li', 1): 14, ('Mg', 2): 15, ('N', -1): 16, ('N', 0): 17, ('N', 1): 18, ('Na', 1): 19, ('O', -1): 20,
+#             ('O', 0): 21, ('O', 1): 22, ('P', 0): 23, ('P', 1): 24, ('S', -1): 25, ('S', 0): 26, ('S', 1): 27}
+
+ATOM_DICT = {('Br', 0): 1, ('C', 0): 3, ('Cl', 0): 7, ('F', 0): 9, ('H', 0): 10, ('I', 0): 12, ('N', 0): 17,
+            ('O', 0): 21, ('P', 0): 23, ('S', 0): 26}
+
 SELF_INTER_ENERGY = {
     'H': -0.500607632585, 
     'C': -37.8302333826,
@@ -24,29 +28,33 @@ class ANI1(Dataset):
         self.species = species
         self.positions = positions
         self.energies = energies
-        self.smiles = smiles
+        # self.smiles = smiles
 
     def __getitem__(self, index):
+        # get the position, atoms, and energie for one conformation
+        # Index automatically handlled by PyGDataLoader
         pos = self.positions[index]
         atoms = self.species[index]
         y = self.energies[index]
 
         x = []
         self_energy = 0.0
+
         for atom in atoms:
             x.append(ATOM_DICT[(atom, 0)])
-            self_energy += SELF_INTER_ENERGY[atom]
+            # self_energy += SELF_INTER_ENERGY[atom]
+            self_energy += SELF_INTER_ENERGY.get(atom, 0)
+
         x = torch.tensor(x, dtype=torch.long)
         pos = torch.tensor(pos, dtype=torch.float)
         # Hartree to kcal/mol
         y = torch.tensor(y, dtype=torch.float).view(1,-1) * 627.5
         # Hartree to kcal/mol
         self_energy = torch.tensor(self_energy, dtype=torch.float).view(1,-1) * 627.5
-        
-        if self.smiles is None:
-            data = Data(x=x, pos=pos, y=y-self_energy, self_energy=self_energy)
-        else:
-            data = Data(x=x, pos=pos, y=y-self_energy, self_energy=self_energy, smi=self.smiles[index])
+        #if self.smiles is None:
+        data = Data(x=x, pos=pos, y=y-self_energy, self_energy=self_energy)
+        # else:
+        #     data = Data(x=x, pos=pos, y=y-self_energy, self_energy=self_energy, smi=self.smiles[index])
 
         return data
 
@@ -57,6 +65,7 @@ class ANI1(Dataset):
 class ANI1Wrapper(object):
     def __init__(self, batch_size, num_workers, valid_size, test_size, data_dir, seed):
         super(object, self).__init__()
+        # Get info from config
         self.data_dir = data_dir
         self.batch_size = batch_size
         self.num_workers = num_workers
@@ -67,10 +76,10 @@ class ANI1Wrapper(object):
     def get_data_loaders(self):
         random_state = np.random.RandomState(seed=self.seed)
 
-        # read the data
+        # read all data with that ends wit hh5
         hdf5files = [f for f in os.listdir(self.data_dir) if f.endswith('.h5')]
 
-        curr_idx, n_mol = 0, 0
+        n_mol = 0 # to record the total number of molecules/conformations
         self.train_species, self.valid_species, self.test_species = [], [], []
         self.train_positions, self.valid_positions, self.test_positions = [], [], []
         self.train_energies, self.valid_energies, self.test_energies = [], [], []
@@ -80,19 +89,24 @@ class ANI1Wrapper(object):
             print('reading:', f)
             h5_loader = anidataloader(os.path.join(self.data_dir, f))
             for data in h5_loader:
+                # Get coordinates, atom types, energies, smiles
                 X = data['coordinates']
                 S = data['species']
                 E = data['energies']
-                smi = ''.join(data['smiles'])
-                
+                # smi = ''.join(data['smiles'])
+                # get the number of conformations
                 n_conf = E.shape[0]
+                # create a list of indices and randomly shuffle them
                 indices = list(range(n_conf))
                 random_state.shuffle(indices)
+                # calculate the split points for training, validation, and test data
                 split1 = int(np.floor(self.valid_size * n_conf))
                 split2 = int(np.floor(self.test_size * n_conf))
+                # split indices to 3
                 valid_idx, test_idx, train_idx = \
                     indices[:split1], indices[split1:split1+split2], indices[split1+split2:]
 
+                # Record atom types, training energies, and positions for the 3 datasets
                 self.train_species.extend([S] * len(train_idx))
                 self.train_energies.append(E[train_idx])
                 for i in train_idx:
@@ -107,12 +121,13 @@ class ANI1Wrapper(object):
                 self.test_energies.append(E[test_idx])
                 for i in test_idx:
                     self.test_positions.append(X[i])
-                self.test_smiles.extend([smi] * len(test_idx))
 
+                # self.test_smiles.extend([smi] * len(test_idx))
                 n_mol += 1
             
             h5_loader.cleanup()
         
+        # Merge all lists of lists from all files into a single array
         self.train_energies = np.concatenate(self.train_energies, axis=0)
         self.valid_energies = np.concatenate(self.valid_energies, axis=0)
         self.test_energies = np.concatenate(self.test_energies, axis=0)
@@ -133,9 +148,14 @@ class ANI1Wrapper(object):
         test_dataset = ANI1(
             self.data_dir, species=self.test_species, 
             positions=self.test_positions, energies=self.test_energies, 
-            smiles=self.test_smiles
+            # smiles=self.test_smiles
         )
 
+        # num_workers: specifies how many subprocesses to use for data loading. It controls the parallelism of data loading
+        # shuffle: determines whether the data should be shuffled at every epoch, turned on for training and off for others
+        # drop_last: controls whether the last batch should be dropped in case it is smaller than the specified batch_size
+        # pin_memory: when set to True, enables the DataLoader to use pinned memory for faster data transfer to CUDA-enabled GPUs
+        # persistent_workers: control whether the worker processes of the DataLoader should be kept alive across multiple iterations
         train_loader = PyGDataLoader(
             train_dataset, batch_size=self.batch_size, num_workers=self.num_workers, 
             shuffle=True, drop_last=True, 
@@ -154,6 +174,6 @@ class ANI1Wrapper(object):
         del self.train_species, self.valid_species, self.test_species
         del self.train_positions, self.valid_positions, self.test_positions
         del self.train_energies, self.valid_energies, self.test_energies
-        del self.test_smiles
+        # del self.test_smiles
 
         return train_loader, valid_loader, test_loader
