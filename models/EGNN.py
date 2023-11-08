@@ -1,5 +1,5 @@
 from copy import deepcopy
-from torch import nn
+import torch.nn as nn
 import torch
 from torch_cluster import radius_graph
 from torch_scatter import scatter
