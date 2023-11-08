@@ -1,6 +1,7 @@
-# ANI-1 Molecule Potential Prediction using Pre-trained Equivariant Graph-Transformer
+# ANI-1 Molecular Potential Prediction using Pre-trained Equivariant Graph-Transformer
 
-This repository holds an end-to-end ANI-1 molecule potential prediction model using an equivariant graph neural network + transformer. 
+![Alt Text!](images/architecture.png)
+This repository holds an Equivariant Graph Neural Network(EGNN) + Transformer-Encoder model used for end-to-end ANI-1 molecular potential prediction.
 
 
 ## Reference:
