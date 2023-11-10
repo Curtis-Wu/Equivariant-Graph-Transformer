@@ -3,7 +3,7 @@
 ![Alt Text!](images/architecture.png)
 This repository holds an Equivariant Graph Neural Network (EGNN) + Transformer-Encoder model used for end-to-end ANI-1 molecular potential prediction. The details for pretraining, fine-tuning and visualization could be found below.
 
-Note: The EGNN portion of the model used is a modified version from [Reference 2](#reference), which does not perform node-coordinates update through layers. Therefore, it possesses an invariant property instead of E(n), which was described in the original paper.
+Note: The EGNN portion of the model used is a modified version from [Reference 1/3](#reference), which does not perform node-coordinates update through layers. Therefore, it possesses an invariant property instead of E(n), which was described in the original paper.
 
 ### Model Training and Evaluation Workflow:
 1) <b>Data Preparation</b>: Place your dataset in the `./Data` folder. Adjust the necessary parameters in the config.yaml file.
@@ -18,11 +18,11 @@ Note: The EGNN portion of the model used is a modified version from [Reference 2
 
 <a name="reference"></a>
 ## Reference:
-1. Wang et al., <i>Denoise Pre-training on Non-equilibrium Molecules for Accurate and Transferable Neural Potentials.</i><br> [[Paper]](https://arxiv.org/abs/2303.02216) [[GitHub]](https://github.com/yuyangw/Denoise-Pretrain-ML-Potential)
-2. Satorras et al., <i>E(n) Equivariant Graph Neural Networks.</i> [[Paper]](https://arxiv.org/abs/2102.09844) [[GitHub]](https://github.com/vgsatorras/egnn)
-3. Smith et al., <i>ANI-1: An extensible neural network potential with DFT accuracy at force field computational cost.</i><br>
-[[Paper]](https://pubs.rsc.org/en/content/articlelanding/2017/sc/c6sc05720a) [[GitHub]](https://github.com/isayev/ANI1_dataset)
-4. Smith et al., <i>ANI-1, A data set of 20 million calculated off-equilibrium conformations for organic molecules.</i><br>
-[[Paper]](https://www.nature.com/articles/sdata2017193)
-5. Vaswani et al., <i>Attention is All You Need.</i>
+1. Satorras et al., <i>E(n) Equivariant Graph Neural Networks.</i> [[Paper]](https://arxiv.org/abs/2102.09844) [[GitHub]](https://github.com/vgsatorras/egnn)
+2. Vaswani et al., <i>Attention is All You Need.</i>
 [[Paper]](https://arxiv.org/abs/1706.03762)
+3. Wang et al., <i>Denoise Pre-training on Non-equilibrium Molecules for Accurate and Transferable Neural Potentials.</i><br> [[Paper]](https://arxiv.org/abs/2303.02216) [[GitHub]](https://github.com/yuyangw/Denoise-Pretrain-ML-Potential)
+4. Smith et al., <i>ANI-1: An extensible neural network potential with DFT accuracy at force field computational cost.</i><br>
+[[Paper]](https://pubs.rsc.org/en/content/articlelanding/2017/sc/c6sc05720a) [[GitHub]](https://github.com/isayev/ANI1_dataset)
+5. Smith et al., <i>ANI-1, A data set of 20 million calculated off-equilibrium conformations for organic molecules.</i><br>
+[[Paper]](https://www.nature.com/articles/sdata2017193)
