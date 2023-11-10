@@ -1,0 +1,7 @@
+conda install pytorch==1.12.0 cudatoolkit=11.6 -c pytorch -c conda-forge
+conda install pyg -c pyg
+conda install -c conda-forge tensorboard openmm
+pip install PyYAML
+pip install torch_scatter
+pip install torch_cluster
+pip install h5py
