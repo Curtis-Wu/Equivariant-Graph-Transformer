@@ -1,6 +1,6 @@
 # ANI-1 Molecular Potential Prediction using Pre-trained EGNN and Transformer-Encoder
 
-![Alt Text!](images/architecture.png)
+![Alt Text!](images/architecture.png)<br>
 This repository holds an Equivariant Graph Neural Network (EGNN) + Transformer-Encoder model used for end-to-end ANI-1 molecular potential prediction. The details for pretraining, fine-tuning and visualization could be found below.
 
 Note: The EGNN portion of the model used is a modified version from [Reference 1/3](#reference), which does not perform node-coordinates update through layers. Therefore, it possesses an invariant property instead of E(n), which was described in the original paper.
