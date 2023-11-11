@@ -3,7 +3,9 @@
 ![Alt Text!](images/architecture.png)<br>
 This repository holds an Equivariant Graph Neural Network (EGNN) + Transformer-Encoder model used for end-to-end ANI-1 molecular potential prediction. The details for pretraining, fine-tuning and visualization could be found below.
 
-Note: The EGNN portion of the model used is a modified version from [Reference 1/3](#reference), which does not perform node-coordinates update through layers. Therefore, it possesses an invariant property instead of E(n), which was described in the original paper.
+The goal of this project is to achieve accurate molecular potential prediction for the ANI-1 data set. But the functionality of the model should be able to generalize molecular properties prediction accurately to other datasets such as ANI-1x, QM9 etc. The model presented in this repository use a Pre-trained<sup><a href="#reference">3</a></sup> E(n) equivariant neural network<sup><a href="#reference">1</a></sup>, which becomes invariant in our case when dealing with objects with static positions, as well as an transformer encoder to capture both the local and global interactions between the point clouds to achieve molecular properties predictions accurately.
+
+The complete process and workflow of data-processing, model architecture creation, model training/fine-tuning could be found in models/main.ipynb.
 
 ### Model Training and Evaluation Workflow:
 1) <b>Data Preparation</b>: Place your dataset in the `./Data` folder. Adjust the necessary parameters in the config.yaml file.
