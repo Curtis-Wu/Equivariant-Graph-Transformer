@@ -1,11 +1,16 @@
+# with python 3.8.18 and g++ version 5.4.0
+PyYAML
+h5py==3.7.0
+torch==1.12.0
+numpy==1.19.5
+cudatoolkit==10.2
+tensorboard==1.15.0
+tensorboard==1.15.0
+torch-geometric==2.4.0
+torch-scatter @ https://data.pyg.org/whl/torch-1.12.0+cu102.html
+torch-sparse @ https://data.pyg.org/whl/torch-1.12.0+cu102.html
+pip install torch-scatter -f https://data.pyg.org/whl/torch-1.12.0+cu116.html
+
 conda create -p /global/scratch/users/curtiswu/envs/ani python==3.8
 conda activate /global/scratch/users/curtiswu/envs/ani
-conda install pytorch==1.12.0 cudatoolkit=11.6 -c pytorch -c conda-forge
-conda install pyg -c pyg
-conda install -c conda-forge tensorboard openmm
-pip install PyYAML
-pip install torch_scatter
-pip install torch_cluster
-pip install h5py
-
-gcc version 5.4.0
+conda install pytorch==1.12.0 cudatoolkit=10.2 -c pytorch -c conda-forge
