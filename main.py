@@ -1,4 +1,5 @@
 import yaml
+import torch
 import torch.nn as nn
 import torch.multiprocessing
 torch.multiprocessing.set_sharing_strategy('file_system')
@@ -48,8 +49,10 @@ if __name__ == "__main__":
     
     if config["load_model"]:
         # Load pre-trained model
-        pretrained_model = torch.load(config["load_model"], map_location=torch.device('cpu'))
-        model.load_state_dict(pretrained_model, strict=False);
+        device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+        pretrained_model = torch.load(config["load_model"], map_location = device)
+        model.load_state_dict(pretrained_model, strict=False)
+        print(f"Successfully loaded pre-trained model {config['load_model']}")
     
     trainer = Trainer(model, config)
     trainer.train()
