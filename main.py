@@ -21,6 +21,7 @@ def create_model(model_dict):
         cutoff = model_dict["cutoff"],
         max_num_neighbors = model_dict["max_num_neighbors"],
         static_coord = model_dict["static_coord"],
+        freeze_egcl = model_dict["freeze_egcl"],
         # Encoder Parameters
         d_model = model_dict["d_model"],
         num_encoder = model_dict["num_encoder"],
@@ -45,7 +46,7 @@ if __name__ == "__main__":
     model = create_model(config["model_dict"])
     
     total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
-    print(f"The total number of parameters is {total_params}")
+    print(f"The total number of trainable un-frozen parameters is {total_params}")
     
     if config["load_model"]:
         # Load pre-trained model

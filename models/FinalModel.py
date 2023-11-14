@@ -9,8 +9,8 @@ class EGTF(nn.Module):
     def __init__(self, # EGNN/EGCL parameters
                  hidden_channels, num_edge_feats = 0, num_egcl = 4, 
                  act_fn = nn.SiLU(), residual = True, attention = True,
-                 normalize = False, max_atom_type = 100, 
-                 cutoff = 5.0, max_num_neighbors = 32, static_coord = True,
+                 normalize = False, max_atom_type = 100, cutoff = 5.0,
+                 max_num_neighbors = 32, static_coord = True, freeze_egcl = True,
                  # Transformer-Encoder parameters
                  d_model = 256, num_encoder = 2, num_heads = 8,
                  num_ffn = 512, act_fn_ecd = nn.SiLU(), dropout_r = 0.1,
@@ -36,6 +36,13 @@ class EGTF(nn.Module):
                 act_fn = act_fn, residual = residual, 
                 attention = attention, normalize = normalize,
                 static_coord = static_coord))
+        
+        # Whether or not to freeze parameters of pre-trained egnn
+        if freeze_egcl:
+            for i in range(num_egcl):
+                layer_name = f"gcl_{i}"
+                for param in getattr(self, layer_name).parameters():
+                    param.requires_grad = False
 
         # Transformer-Encoder layers
         self.encoder_layers = \

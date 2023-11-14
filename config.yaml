@@ -22,14 +22,15 @@ model_dict:
   max_atom_type: 28       # Max atom types
   max_num_neighbors: 32   # Max number of neighborgoods
   static_coord: True      # Specify whether to update coord or not
-
+  freeze_egcl: True       # Specify whether to freeze egcl parameters or not
+  
   # Transformer-Encoder part of the model
   d_model: 256            # Embeddings for each token
   num_encoder: 1          # Number of encoder units
   num_heads: 8            # Number of self-attention heads
   num_ffn: 256            # Number of neurons in the feedforward MLP
   act_fn_ecd: "ReLU"   # Activation function for encoder MLP
-  dropout_r: 0.2          # Dropout rate
+  dropout_r: 0.1          # Dropout rate
 
   # Energy Head
   num_neuron: 256         # NUmber of neurons for the final energy head

@@ -113,7 +113,7 @@ class Trainer(object):
         valid_n_iter = 0
         best_valid_loss = np.inf
 
-        from utils import adjust_learning_rate  # This is a function that adjusts learning rate according to
+        from models.utils import adjust_learning_rate  # This is a function that adjusts learning rate according to
                                                 # specified lr, min_lr, epochs, warmup_epochs, patience_epochs
 
         for epoch_counter in range(self.config['epochs']):
