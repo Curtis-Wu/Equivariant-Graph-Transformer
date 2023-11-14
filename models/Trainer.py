@@ -2,6 +2,7 @@ import os
 import gc
 import csv
 import time
+import json
 import torch
 import shutil
 import numpy as np
@@ -66,6 +67,18 @@ class Trainer(object):
 
         return device
 
+    # Save mean and std for training data
+    def _save_normalizer_values(self):
+        """Saves the normalizer mean and std to a JSON file."""
+        normalizer_values = {
+            'mean': self.normalizer.mean.item(),  # Convert tensor to float
+            'std': self.normalizer.std.item()     # Convert tensor to float
+        }
+        normalizer_file_path = os.path.join(self.log_dir, 'normalizer_values.json')
+        with open(normalizer_file_path, 'w') as f:
+            json.dump(normalizer_values, f)
+        print(f"Normalizer values saved at {normalizer_file_path}")
+
     # config saving
     @staticmethod
     def _save_config_file(ckpt_dir):
@@ -92,6 +105,7 @@ class Trainer(object):
         labels = torch.cat(energy_labels)
         # normalize energy values
         self.normalizer = Normalizer(labels)
+        self._save_normalizer_values()
         gc.collect() # free memory
 
         model = self.model.to(self.device)

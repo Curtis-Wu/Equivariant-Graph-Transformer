@@ -1,45 +1,36 @@
-epochs: 5
-gpu: cuda
-load_model: models/pretrained_egnn.pth
-log_every_n_steps: 150
-lr: 0.0002
-min_lr: 1.0e-07
-patience_epochs: 0.3
-warmup_epochs: 0.7
-weight_decay: 0.0
-
-
-model_dict:
-
-  hidden_channels: 256    # Number of hidden_channels
-  num_edge_feats: 0       # Number of additional edge features
-  num_egcl: 3             # Number of EGCL layers
-  act_fn: "SiLU"
-  residual: True          # Residual calculation
-  attention: True         # Graph Attention mechanism
-  normalize: True         # Interatomic distance normalization
-  cutoff: 5             # Interatomic distance curoff
-  max_atom_type: 28       # Max atom types
-  max_num_neighbors: 32   # Max number of neighborgoods
-  static_coord: True      # Specify whether to update coord or not
-  freeze_egcl: True       # Specify whether to freeze egcl parameters or not
-  
-  # Transformer-Encoder part of the model
-  d_model: 256            # Embeddings for each token
-  num_encoder: 1          # Number of encoder units
-  num_heads: 8            # Number of self-attention heads
-  num_ffn: 256            # Number of neurons in the feedforward MLP
-  act_fn_ecd: "ReLU"   # Activation function for encoder MLP
-  dropout_r: 0.1          # Dropout rate
-
-  # Energy Head
-  num_neuron: 256         # NUmber of neurons for the final energy head
-
 dataset_dict:
-
-  data_dir: ./Data
   batch_size: 256
+  data_dir: ./Data
   num_workers: 2
+  seed: 666
   test_size: 0.1
   valid_size: 0.1
-  seed: 666
+epochs: 20
+gpu: cuda:0
+load_model: models/pretrained_egnn.pth
+log_every_n_steps: 200
+lr: 0.0002
+min_lr: 1.0e-07
+model_dict:
+  act_fn: SiLU
+  act_fn_ecd: ReLU
+  attention: true
+  cutoff: 5
+  d_model: 256
+  dropout_r: 0.1
+  freeze_egcl: true
+  hidden_channels: 256
+  max_atom_type: 28
+  max_num_neighbors: 32
+  normalize: true
+  num_edge_feats: 0
+  num_egcl: 3
+  num_encoder: 1
+  num_ffn: 256
+  num_heads: 8
+  num_neuron: 256
+  residual: true
+  static_coord: true
+patience_epochs: 0.7
+warmup_epochs: 0.3
+weight_decay: 0.0
