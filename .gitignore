@@ -1,3 +1,5 @@
-/Data
+/Data/*
+/Data_eval/*
+/__pycache__
 /models/__pycache__
 /Runs
