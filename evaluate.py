@@ -69,15 +69,6 @@ class Evaluater(object):
         
         train_loader, valid_loader, test_loader = self.dataset.get_data_loaders()
 
-        # energy_labels = []
-        # for data in train_loader:
-        #     energy_labels.append(data.y)
-
-        # labels = torch.cat(energy_labels)
-        # self.normalizer = Normalizer(labels)
-        # print(f"The mean and std for evaluation dataset: {self.normalizer.mean.item()}, {self.normalizer.std.item()}")
-        # gc.collect() # free memory
-
         model = self.model.to(self.device)
         predictions, labels = [], []
         model.eval()
