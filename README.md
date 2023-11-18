@@ -5,7 +5,7 @@ This repository holds an Equivariant Graph Neural Network (EGNN) + Transformer-E
 
 The goal of this project is to achieve accurate molecular potential prediction for the ANI-1 data set.  The model presented in this repository use a Pre-trained<sup><a href="#reference">3</a></sup> E(n) equivariant neural network<sup><a href="#reference">1</a></sup>, which becomes invariant in our case when dealing with objects with static positions, as well as an transformer encoder to capture both the local and global interactions between the point clouds to achieve molecular properties predictions accurately.
 
-<b><i>The complete process and workflow of data-processing, model architecture creation, model training/fine-tuning with detailed documentation could be found in main.ipynb.</b></i>
+<b><i>The complete process and workflow of data-processing, model architecture creation, model training and results with detailed documentation can be found in main.ipynb.</b></i>
 
 ## Getting Started
 
@@ -85,7 +85,7 @@ If error was found during the installation of torch_geometric related packages, 
 ### Training<a name="training"></a>
 To train the model using custom data, place the data in the ./Data folder. Change the `config.yaml` file accordingly, and input the following into the command line:
 ```
-conda activate EGTF_env
+conda activate EGTF_env # Activate environment
 python3 train.py    # Run python training script
 conda deactivate    # Deactivate the environment
 make delete-env     # Delete the conda envrionment
@@ -94,9 +94,9 @@ make delete-env     # Delete the conda envrionment
 ### Evaluation<a name="eval"></a>
 To evaluate the model from a specific run using custom data, place the data in the ./Data_eval folder, and input the following into the command line:
 ```
-conda activate EGTF_env
+conda activate EGTF_env # Activate environment
 python3 evaluate.py Runs_savio/$SPECIFIC_RUN
-conda deactivate
+conda deactivate    # Deactivate the environment
 make delete-env     # Delete the conda envrionment
 ```
 This will load the pre-trained model architecture, parameters, and normalizer from that specific run, and perform evaluation on 10% of the Data in Data_eval.<br>
