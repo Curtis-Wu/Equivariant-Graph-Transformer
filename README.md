@@ -1,13 +1,13 @@
 # Molecular Potential Prediction using Pre-trained EGNN and Transformer-Encoder
 
 ![Alt Text!](images/architecture.png)<br>
-This repository holds an Equivariant Graph Neural Network (EGNN) + Transformer-Encoder model used for end-to-end ANI-1 molecular potential prediction. Instructions for training and evaluation of the model could be found below.
+This repository holds an Equivariant Graph Neural Network (EGNN) + Transformer-Encoder model used for end-to-end ANI-1 molecular potential prediction. Instructions for training and evaluation of the model could be found in sections below.
 
-The goal of this project is to achieve accurate molecular potential prediction for the ANI-1 data set.  The model presented in this repository use a Pre-trained<sup><a href="#reference">3</a></sup> E(n) equivariant neural network<sup><a href="#reference">1</a></sup>, which becomes invariant in our case when dealing with objects with static positions, as well as an transformer encoder to capture both the local and global interactions between the point clouds to achieve molecular properties predictions accurately.
+The goal of this project is to achieve accurate molecular potential prediction for the ANI-1 data set.  The model presented in this repository use a Pre-trained<sup><a href="#reference">3</a></sup> E(n) equivariant neural network<sup><a href="#reference">1</a></sup>, which becomes invariant in our case when dealing with objects with static positions, as well as an transformer encoder to capture both the local and global interactions between the nodes to achieve accurate molecular properties predictions.
 
 <b><i>The complete process and workflow of data-processing, model architecture creation, model training and results with detailed documentation can be found in main.ipynb.</b></i>
 
-## Getting Started
+## Sections
 
 1. [Complete Workflow](#work)
 2. [Parameter Details](#config)
