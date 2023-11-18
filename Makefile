@@ -1,7 +1,7 @@
 # Makefile for envrionment generation and training
 
 ENV_FILE = environment.yaml
-ENV_NAME = $(shell grep 'name:' $(ENV_FILE) | cut -d ' ' -f 2)
+ENV_NAME = EGTF_env
 
 # Create conda environemnt with specfied packages
 create-env:

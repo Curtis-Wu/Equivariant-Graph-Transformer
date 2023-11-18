@@ -148,14 +148,6 @@ class Trainer(object):
                     print(f"Training at Epoch: {epoch_counter+1}, Batch #: {bn+1}, RMSE: {loss.item()}")
                     torch.cuda.empty_cache()
 
-                # if n_iter != 0 and n_iter % 1000 == 0:
-                #     valid_rmse = self._validate(model, valid_loader)
-                #     self.writer.add_scalar('valid_rmse', valid_rmse, global_step=n_iter)
-                #     print(f"Validation at Epoch: {epoch_counter+1}, RMSE: {valid_rmse}")
-
-                #     if valid_rmse < best_valid_loss:
-                #         best_valid_loss = valid_rmse
-                #         torch.save(model.state_dict(), os.path.join(ckpt_dir, 'best_model.pth'))
                 n_iter += 1
             
             gc.collect() # free memory
