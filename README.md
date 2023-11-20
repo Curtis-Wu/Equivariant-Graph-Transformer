@@ -5,6 +5,8 @@ This repository holds an Equivariant Graph Neural Network (EGNN) + Transformer-E
 
 The goal of this project is to achieve accurate molecular potential prediction for the ANI-1 data set.  The model presented in this repository use a Pre-trained<sup><a href="#reference">3</a></sup> E(n) equivariant neural network<sup><a href="#reference">1</a></sup>, which becomes invariant in our case when dealing with objects with static positions, as well as an transformer encoder to capture both the local and global interactions between the nodes to achieve accurate molecular properties predictions.
 
+<i>Note: The repository name was proposed for simplicity reasons. The model presented is not a Graph-Transformer in a traditional meaning, which utilizes transformer architecture to perform calculation directly on graph data (Nodes + Edges).</i>
+
 <b><i>The complete process and workflow of data-processing, model architecture creation, model training and results with detailed documentation can be found in main.ipynb.</b></i>
 
 ## Sections
@@ -28,7 +30,7 @@ The goal of this project is to achieve accurate molecular potential prediction f
 
 ### Parameter Details<a name="config"></a>
 ```
-    gpu: cuda:0             # Custom name for gpu device
+    gpu: gpu                # Custom name for gpu device
     lr: 2e-4                # Maximum learning rate
     min_lr: 1e-7            # Minimum learning rate
     weight_decay: 0.0       # Weight decay param

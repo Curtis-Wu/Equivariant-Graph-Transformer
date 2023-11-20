@@ -6,7 +6,7 @@ dataset_dict:
   test_size: 0.1
   valid_size: 0.1
 epochs: 20
-gpu: cuda:0
+gpu: gpu
 load_model: models/pretrained_egnn.pth
 log_every_n_steps: 250
 lr: 0.0002
