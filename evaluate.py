@@ -25,9 +25,9 @@ class Evaluater(object):
 
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         self.dataset = ANI1Wrapper(**self.config['dataset_dict'])
-        # Create model and normalizer
+        # Create model
         self._create_model()
-        self.load_normalizer_values()
+        # self.load_normalizer_values()
     
     def _create_model(self):
         # Create and load pre-trained model
@@ -52,7 +52,7 @@ class Evaluater(object):
         data = data.to(self.device)
         pred_e = model(data.x, data.pos, data.batch)
         loss = F.mse_loss(
-            pred_e, self.normalizer.norm(data.y), reduction='mean'
+            pred_e, data.y, reduction='mean'
         )
         return pred_e, loss
     
@@ -75,7 +75,7 @@ class Evaluater(object):
 
         for bn, data in enumerate(test_loader):                
             pred_e, _ = self.loss_fn(model, data)
-            pred_e = self.normalizer.denorm(pred_e)
+            # pred_e = self.normalizer.denorm(pred_e)
 
             label = data.y
 

@@ -1,11 +1,12 @@
 dataset_dict:
   batch_size: 256
   data_dir: ./Data
-  num_workers: 3
+  num_workers: 2
   seed: 666
   test_size: 0.1
   valid_size: 0.1
 epochs: 20
+freeze_epochs: 0
 gpu: gpu
 load_model: models/pretrained_egnn.pth
 log_every_n_steps: 250
@@ -31,6 +32,7 @@ model_dict:
   num_neuron: 256
   residual: true
   static_coord: true
+normalize_energies: false
 patience_epochs: 0.9
 warmup_epochs: 0.1
 weight_decay: 0.0
