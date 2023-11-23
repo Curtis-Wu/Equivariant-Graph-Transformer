@@ -7,13 +7,13 @@ from models.Transformer_Encoder import EncoderLayer
 
 class EGTF(nn.Module):
     def __init__(self, # EGNN/EGCL parameters
-                 hidden_channels, num_edge_feats = 0, num_egcl = 4, 
+                 hidden_channels, num_edge_feats, num_egcl, 
                  act_fn = nn.SiLU(), residual = True, attention = True,
                  normalize = False, max_atom_type = 100, cutoff = 5.0,
                  max_num_neighbors = 32, static_coord = True, freeze_egcl = True,
                  # Transformer-Encoder parameters
-                 d_model = 256, num_encoder = 2, num_heads = 8,
-                 num_ffn = 512, act_fn_ecd = nn.SiLU(), dropout_r = 0.1,
+                 d_model = 256, num_encoder = 1, num_heads = 8,
+                 num_ffn = 256, act_fn_ecd = nn.SiLU(), dropout_r = 0.1,
                  # Energy Head parameter
                  num_neurons = 512):
 
@@ -25,6 +25,8 @@ class EGTF(nn.Module):
         self.max_num_neighbors = max_num_neighbors
         # Create embeddings of dimension (hidden_channels, ) for each atom type
         self.type_embedding = nn.Embedding(max_atom_type, hidden_channels)
+        self.freeze_egcl = freeze_egcl
+        self.freeze_state = freeze_egcl
         
         # EGC layers
         for i in range(0, num_egcl):
@@ -36,14 +38,14 @@ class EGTF(nn.Module):
                 act_fn = act_fn, residual = residual, 
                 attention = attention, normalize = normalize,
                 static_coord = static_coord))
-        
+            
         # Whether or not to freeze parameters of pre-trained egnn
         if freeze_egcl:
-            for i in range(num_egcl - 1):
+            for i in range(num_egcl):
                 layer_name = f"gcl_{i}"
                 for param in getattr(self, layer_name).parameters():
                     param.requires_grad = False
-
+                    
         # Transformer-Encoder layers
         self.encoder_layers = \
             nn.ModuleList([EncoderLayer(d_model, num_heads,
@@ -82,5 +84,24 @@ class EGTF(nn.Module):
         
         out = self.energy_fc(h)
 
-        return out        
-
+        return out
+    
+    def freeze_layers(self):
+        if self.freeze_egcl:
+            return
+        for i in range(self.n_layers):
+            layer_name = f"gcl_{i}"
+            for param in getattr(self, layer_name).parameters():
+                param.requires_grad = False
+        self.freeze_state = True
+                    
+    def unfreeze_layers(self):
+        if self.freeze_egcl:
+            return
+        
+        for i in range(self.n_layers):
+            layer_name = f"gcl_{i}"
+            for param in getattr(self, layer_name).parameters():
+                param.requires_grad = True
+        
+        self.freeze_state = False

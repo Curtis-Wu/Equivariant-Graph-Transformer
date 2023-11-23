@@ -16,7 +16,6 @@ from torch.utils.tensorboard import SummaryWriter
 torch.multiprocessing.set_sharing_strategy('file_system')
 from sklearn.metrics import mean_absolute_error, mean_squared_error
 
-
 # Normalizer class for normalizing and denormalizing energy values
 class Normalizer(object):
     """Class for normalization and de-normalization of tensors. """
@@ -56,6 +55,7 @@ class Trainer(object):
         dir_name = '_'.join([datetime.now().strftime('%b%d_%H-%M-%S'), self.prefix, self.model_prefix])
         self.log_dir = os.path.join('Runs', dir_name)
         self.writer = SummaryWriter(log_dir=self.log_dir)
+        self.normalize_energies = config["normalize_energies"]
 
     # Get device function
     def _get_device(self):
@@ -66,7 +66,7 @@ class Trainer(object):
         print("Running on:", device)
 
         return device
-
+    
     # Save mean and std for training data
     def _save_normalizer_values(self):
         """Saves the normalizer mean and std to a JSON file."""
@@ -90,9 +90,14 @@ class Trainer(object):
     def loss_fn(self, model, data):
         data = data.to(self.device)
         pred_e = model(data.x, data.pos, data.batch)
-        loss = F.mse_loss(
-            pred_e, self.normalizer.norm(data.y), reduction='mean'
-        )
+
+        if self.normalize_energies:
+            loss = F.mse_loss(
+                pred_e, self.normalizer.norm(data.y), reduction='mean')
+        else:
+            loss = F.mse_loss(
+                pred_e, data.y, reduction='mean')
+
         return pred_e, loss
 
     def train(self):
@@ -103,9 +108,12 @@ class Trainer(object):
         for data in train_loader:
             energy_labels.append(data.y)
         labels = torch.cat(energy_labels)
-        # normalize energy values
-        self.normalizer = Normalizer(labels)
-        self._save_normalizer_values()
+
+        if self.normalize_energies:
+            # normalize energy values
+            self.normalizer = Normalizer(labels)
+            self._save_normalizer_values()
+        
         gc.collect() # free memory
 
         model = self.model.to(self.device)
@@ -126,11 +134,18 @@ class Trainer(object):
         n_iter = 0
         valid_n_iter = 0
         best_valid_loss = np.inf
-
+        freeze_epochs = self.config["freeze_epochs"]
+                                    
         from models.utils import adjust_learning_rate  # This is a function that adjusts learning rate according to
-                                                # specified lr, min_lr, epochs, warmup_epochs, patience_epochs
+                                                       # specified lr, min_lr, epochs, warmup_epochs, patience_epochs
 
         for epoch_counter in range(self.config['epochs']):
+            if epoch_counter == 0:
+                model.freeze_layers()
+
+            if epoch_counter == freeze_epochs:
+                model.unfreeze_layers()
+            print(f"Starting training at Epoch {epoch_counter + 1}, EGCL frozen state: {model.freeze_state}")
             for bn, data in enumerate(train_loader):
                 # adjust learning rate accordingly                
                 adjust_learning_rate(optimizer, epoch_counter + bn / len(train_loader), self.config)
@@ -152,7 +167,6 @@ class Trainer(object):
             
             gc.collect() # free memory
             torch.cuda.empty_cache()
-
             # validate the model 
             valid_rmse = self._validate(model, valid_loader)
             self.writer.add_scalar('valid_rmse', valid_rmse, global_step=valid_n_iter)
@@ -175,7 +189,9 @@ class Trainer(object):
 
         for bn, data in enumerate(valid_loader):
             pred_e, loss = self.loss_fn(model, data)
-            pred_e = self.normalizer.denorm(pred_e)
+
+            if self.normalize_energies:
+                pred_e = self.normalizer.denorm(pred_e)
 
             y = data.y
 
@@ -206,7 +222,9 @@ class Trainer(object):
 
         for bn, data in enumerate(test_loader):                
             pred_e, _ = self.loss_fn(model, data)
-            pred_e = self.normalizer.denorm(pred_e)
+            
+            if self.normalize_energies:
+                pred_e = self.normalizer.denorm(pred_e)
 
             label = data.y
 
@@ -229,7 +247,7 @@ class Trainer(object):
         mae = mean_absolute_error(labels, predictions)
         print(f"The test RMSE and MAE are {rmse}, {mae}")
 
-        # Write the 
+        # Write the predicted and label energies to csv
         with open(os.path.join(self.log_dir, 'results.csv'), mode='w', newline='') as csv_file:
             csv_writer = csv.writer(csv_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
             for i in range(len(labels)):
