@@ -76,7 +76,6 @@ class Evaluater(object):
         for bn, data in enumerate(test_loader):                
             pred_e, _ = self.loss_fn(model, data)
             # pred_e = self.normalizer.denorm(pred_e)
-
             label = data.y
 
             # add the self interaction energy back
@@ -101,7 +100,7 @@ class Evaluater(object):
     
 if __name__ == "__main__":
     
-    parser = argparse.ArgumentParser(description = "Pass in log directory to evaluate.")
+    parser = argparse.ArgumentParser(description = "Pass in log directory as argument to evaluate.")
     parser.add_argument("log_dir", help = "The log directory.", type = str)
     args = parser.parse_args()
     log_dir = args.log_dir

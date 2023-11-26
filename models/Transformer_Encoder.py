@@ -101,6 +101,7 @@ class MLP(nn.Module):
     def forward(self, x):
         x = self.linear1(self.act_fn(x))
         x = self.dropout(x)
+        x = self.linear2(self.act_fn(x))
 
         return x
     

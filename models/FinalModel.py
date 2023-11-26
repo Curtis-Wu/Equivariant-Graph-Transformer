@@ -41,7 +41,7 @@ class EGTF(nn.Module):
             
         # Whether or not to freeze parameters of pre-trained egnn
         if freeze_egcl:
-            for i in range(num_egcl):
+            for i in range(num_egcl-1):
                 layer_name = f"gcl_{i}"
                 for param in getattr(self, layer_name).parameters():
                     param.requires_grad = False
@@ -54,7 +54,7 @@ class EGTF(nn.Module):
 
         # Energy Head
         self.energy_fc = nn.Sequential(
-            nn.Linear(num_neurons, num_neurons),
+            nn.Linear(d_model, num_neurons),
             act_fn_ecd,
             nn.Linear(num_neurons, 1)
         )
