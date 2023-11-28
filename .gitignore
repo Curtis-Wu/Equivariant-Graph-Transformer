@@ -2,4 +2,5 @@
 /Data_eval/*
 /__pycache__
 /models/__pycache__
+/.vscode
 /Runs
