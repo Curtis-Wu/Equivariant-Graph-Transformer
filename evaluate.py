@@ -27,7 +27,11 @@ class Evaluater(object):
         self.dataset = ANI1Wrapper(**self.config['dataset_dict'])
         # Create model
         self._create_model()
-        # self.load_normalizer_values()
+        self.scale_value = self.config["scale_value"]
+
+        self.normalize_energies = self.config["normalize_energies"]
+        if self.normalize_energies:
+            self.load_normalizer_values()
     
     def _create_model(self):
         # Create and load pre-trained model
@@ -51,9 +55,14 @@ class Evaluater(object):
     def loss_fn(self, model, data):
         data = data.to(self.device)
         pred_e = model(data.x, data.pos, data.batch)
-        loss = F.mse_loss(
-            pred_e, data.y, reduction='mean'
-        )
+
+        if self.normalize_energies:
+            loss = F.mse_loss(
+                pred_e, self.normalizer.norm(data.y), reduction='mean')
+        else:
+            loss = F.mse_loss(
+                pred_e, data.y/self.scale_value, reduction='mean')
+
         return pred_e, loss
     
     def load_normalizer_values(self):
@@ -67,15 +76,19 @@ class Evaluater(object):
 
     def evaluate(self):
         
-        train_loader, valid_loader, test_loader = self.dataset.get_data_loaders()
+        _, _, test_loader = self.dataset.get_data_loaders()
 
         model = self.model.to(self.device)
         predictions, labels = [], []
         model.eval()
 
-        for bn, data in enumerate(test_loader):                
-            pred_e, _ = self.loss_fn(model, data)
-            # pred_e = self.normalizer.denorm(pred_e)
+        for bn, data in enumerate(test_loader):   
+            pred_e = model(data.x, data.pos, data.batch)
+
+            if self.normalize_energies:
+                pred_e = self.normalizer.denorm(pred_e)
+            else: pred_e *= self.scale_value
+
             label = data.y
 
             # add the self interaction energy back

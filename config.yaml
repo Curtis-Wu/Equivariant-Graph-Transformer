@@ -1,22 +1,22 @@
 dataset_dict:
   batch_size: 256
   data_dir: ./Data
-  num_workers: 2
+  num_workers: 8
   seed: 666
   test_size: 0.1
   valid_size: 0.1
-epochs: 20
+epochs: 18
 freeze_epochs: 0
 gpu: gpu
 load_model: models/pretrained_egnn.pth
 log_every_n_steps: 250
-lr: 0.0002
+lr: 0.00018
 min_lr: 1.0e-07
 model_dict:
   act_fn: SiLU
   act_fn_ecd: ReLU
   attention: true
-  cutoff: 5
+  cutoff: 4
   d_model: 256
   dropout_r: 0.1
   freeze_egcl: true
@@ -25,14 +25,15 @@ model_dict:
   max_num_neighbors: 32
   normalize: true
   num_edge_feats: 0
-  num_egcl: 3
-  num_encoder: 1
+  num_egcl: 2
+  num_encoder: 2
   num_ffn: 256
   num_heads: 8
-  num_neuron: 256
+  num_neuron: 512
   residual: true
   static_coord: true
 normalize_energies: false
-patience_epochs: 0.9
-warmup_epochs: 0.1
+patience_epochs: 4
+scale_value: 300
+warmup_epochs: 1
 weight_decay: 0.0
