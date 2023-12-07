@@ -27,7 +27,7 @@ class Evaluater(object):
         self.dataset = ANI1Wrapper(**self.config['dataset_dict'])
         # Create model
         self._create_model()
-        self.scale_value = self.config["scale_value"]
+        self.scale_value = self.config.get("scale_value", 1)
 
         self.normalize_energies = self.config["normalize_energies"]
         if self.normalize_energies:

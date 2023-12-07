@@ -56,6 +56,7 @@ class Trainer(object):
         self.log_dir = os.path.join('Runs', dir_name)
         self.writer = SummaryWriter(log_dir=self.log_dir)
         self.normalize_energies = config["normalize_energies"]
+        self.scale_value = config["scale_value"]
 
     # Get device function
     def _get_device(self):
@@ -96,7 +97,7 @@ class Trainer(object):
                 pred_e, self.normalizer.norm(data.y), reduction='mean')
         else:
             loss = F.mse_loss(
-                pred_e, data.y, reduction='mean')
+                pred_e, data.y/self.scale_value, reduction='mean')
 
         return pred_e, loss
 
@@ -134,18 +135,12 @@ class Trainer(object):
         n_iter = 0
         valid_n_iter = 0
         best_valid_loss = np.inf
-        freeze_epochs = self.config["freeze_epochs"]
-                                    
+
         from models.utils import adjust_learning_rate  # This is a function that adjusts learning rate according to
                                                        # specified lr, min_lr, epochs, warmup_epochs, patience_epochs
 
         for epoch_counter in range(self.config['epochs']):
-            if epoch_counter == 0:
-                model.freeze_layers()
-
-            if epoch_counter == freeze_epochs:
-                model.unfreeze_layers()
-            print(f"Starting training at Epoch {epoch_counter + 1}, EGCL frozen state: {model.freeze_state}")
+            
             for bn, data in enumerate(train_loader):
                 # adjust learning rate accordingly                
                 adjust_learning_rate(optimizer, epoch_counter + bn / len(train_loader), self.config)
@@ -192,6 +187,8 @@ class Trainer(object):
 
             if self.normalize_energies:
                 pred_e = self.normalizer.denorm(pred_e)
+            else:
+                pred_e *= self.scale_value
 
             y = data.y
 
@@ -225,6 +222,7 @@ class Trainer(object):
             
             if self.normalize_energies:
                 pred_e = self.normalizer.denorm(pred_e)
+            else: pred_e *= self.scale_value
 
             label = data.y
 
@@ -245,6 +243,8 @@ class Trainer(object):
 
         rmse = mean_squared_error(labels, predictions, squared=False)
         mae = mean_absolute_error(labels, predictions)
+        self.writer.add_scalar('RMSE', rmse, global_step=1)
+        self.writer.add_scalar('MAE', mae, global_step=1)
         print(f"The test RMSE and MAE are {rmse}, {mae}")
 
         # Write the predicted and label energies to csv
