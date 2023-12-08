@@ -23,9 +23,9 @@ The goal of this project is to achieve accurate molecular potential prediction f
 2) <b>Pre-Processing</b>: Additional pre-processing was executed including initial node embeddings by atom type, subtraction of self interaction energy from the total energy etc.
 3) <b>Data Packaging</b>: Organize the processed data into `torch_geometric.loader.DataLoader` to create a `train_loader`, which is then ready for the training process.
 4) <b>Training Setup</b>: Training function configured using parameters specified in the configuration file.
-5) <b>Normalization</b>: Normalize the target data (y-values) using training dataset statistics (mean and standard deviation), and record these values.
+5) <b>Normalization</b>: Scale the target data (y-values) with user specified scaling factor.
 6) <b>Logging and Output</b>: Set up a logging function, file writing, and TensorBoard writer for monitoring the training process.
-7) <b>Model Training</b>: Train the model batch-wise and save the model parameters with the lowest validation loss. For evaluation, the y-values are denormalized using the previously recorded standard deviation and mean.
+7) <b>Model Training</b>: Train the model batch-wise and save the model parameters with the lowest validation loss. For evaluation, the y-values are re-scaled back using the scaling value.
 8) <b>Evaluation on Test Set</b>: Use the best-performing model to evaluate the test set and analyze the results.
 
 ### Parameter Details<a name="config"></a>
@@ -41,16 +41,21 @@ The goal of this project is to achieve accurate molecular potential prediction f
 
     # Load_model: None 
     load_model: models/pretrained_egnn.pth
+
+    scale_value: 300        # Energy scaling factor
+    normalize_energies: false # Energy normalization
+    log_transformation: false # Log transformation on energies
+    freeze_epochs: 0        # Freeze EGCl by epochs, depreciated and not deleted in code
     
     # EGNN/EGCL Parameters
     hidden_channels: 256    # Number of hidden_channels
     num_edge_feats: 0       # Number of additional edge features
-    num_egcl: 3             # Number of EGCL layers
+    num_egcl: 2             # Number of EGCL layers
     act_fn: SiLU            # Activation function
     residual: True          # Residual calculation
     attention: True         # Graph Attention mechanism
     normalize: True         # Interatomic distance normalization
-    cutoff: 5               # Interatomic distance curoff
+    cutoff: 4               # Interatomic distance curoff
     max_atom_type: 28       # Max atom types
     max_num_neighbors: 32   # Max number of neighborgoods
     static_coord: True      # Specify whether to update coord or not
@@ -65,10 +70,10 @@ The goal of this project is to achieve accurate molecular potential prediction f
     dropout_r: 0.1          # Dropout rate
 
     # Energy Head
-    num_neuron: 256         # NUmber of neurons for the final energy head
+    num_neuron: 512         # NUmber of neurons for the final energy head
 
     batch_size: 256         # Batch size
-    num_workers: 2          # Number of workers for data loaders
+    num_workers: 8          # Number of workers for data loaders
     valid_size: 0.1         # Validation set size
     test_size: 0.1          # Test set size
     data_dir: './Data'      # Data directory
