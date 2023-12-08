@@ -26,8 +26,8 @@ model_dict:
   normalize: true
   num_edge_feats: 0
   num_egcl: 2
-  num_encoder: 2
-  num_ffn: 256
+  num_encoder: 1
+  num_ffn: 512
   num_heads: 8
   num_neuron: 512
   residual: true
